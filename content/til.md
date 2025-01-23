@@ -1,6 +1,6 @@
 ---
 title: "Today I learned"
 description: "Today I learned"
-hideBackToTop: false
+hideBackToTop: true
 hidePagination: true
 ---

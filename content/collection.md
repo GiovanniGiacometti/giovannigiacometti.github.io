@@ -1,6 +1,6 @@
 ---
 title: "Collection"
 description: "Things I Liked"
-hideBackToTop: false
+hideBackToTop: true
 hidePagination: true
 ---
