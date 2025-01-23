@@ -1,4 +1,4 @@
-baseURL = 'https://example.org/'
+baseURL = 'https://giovannigiacometti.github.io'
 languageCode = 'en-us'
 title = 'Giovanni Giacometti'
 theme = 'typo'
@@ -17,14 +17,11 @@ hideHeader = false
 
 # Intro on main page, content is markdown
 homeIntroTitle = 'Hi!'
-homeIntroContent = """
-I am an Italian Software Engineer with a strong foundation in computer science and a passion for solving complex problems.
-I am interested in a range of topics, including algorithms, distributed systems, databases, and information retrieval.
-"""
+homeIntroContent = """"""
 
 # Collection to display on home
-homeCollectionTitle = 'Posts'
-homeCollection = 'posts'
+homeCollectionTitle = ''
+homeCollection = false
 
 # Lists parameters
 paginationSize = 100
@@ -53,8 +50,17 @@ name = "posts"
 url = "/posts"
 
 [[params.menu]]
+name = "til"
+url = "/til"
+
+[[params.menu]]
+name = "collection"
+url = "/collection"
+
+[[params.menu]]
 name = "about"
 url = "/about"
+
 
 # Syntax highlight on code blocks
 [markup]
