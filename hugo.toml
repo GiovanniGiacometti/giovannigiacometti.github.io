@@ -17,7 +17,8 @@ hideHeader = false
 
 # Intro on main page, content is markdown
 homeIntroTitle = 'Hi!'
-homeIntroContent = """"""
+homeIntroContent = """Welcome to my blog. I'm Giovanni, a Machine Learning Engineer. <br>
+I just write about things I like. I hope you like them too!""" 
 
 # Collection to display on home
 homeCollectionTitle = ''
@@ -27,6 +28,9 @@ homeCollection = false
 paginationSize = 100
 listSummaries = true
 listDateFormat = '2 Jan 2006'
+
+showFooter = true
+footerContent = "Proud to be different @ Giovanni Giacometti"
 
 # Breadcrumbs
 breadcrumbs = true
@@ -53,9 +57,9 @@ url = "/posts"
 name = "til"
 url = "/til"
 
-[[params.menu]]
-name = "collection"
-url = "/collection"
+# [[params.menu]]
+# name = "collection"
+# url = "/collection"
 
 [[params.menu]]
 name = "about"
@@ -64,6 +68,9 @@ url = "/about"
 
 # Syntax highlight on code blocks
 [markup]
+defaultMarkdownHandler = "goldmark"
+ignoreLogs = ['warning-goldmark-raw-html']
+goldmark.renderer = { unsafe = true}
 [markup.highlight]
 style = 'algol'
 
@@ -76,3 +83,10 @@ category = "General"
 categoryid = "categoryId"
 mapping = "pathname"
 theme = "preferred_color_scheme"
+
+
+[params.umami]
+enable = true
+websiteId = "629b75ef-d72c-4acf-9a5c-f1f6b554a06f"
+jsLocation = "https://cloud.umami.is/script.js"
+
