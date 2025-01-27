@@ -12,11 +12,12 @@ showTags: false
 ---
 
 
-In the 18th and 19th of January 2025, I participated in my first Hackathon, [HackaPizza](https://hackathon.datapizza.com/), organized by the amazing team of [DataPizza](https://www.datapizza.tech/). The event was held in Milan, Italy, in a very iconic and fascinating location: the IBM Studios, in Piazza Gae Aulenti. 
+In the 18th and 19th of January 2025, I participated in my first Hackathon, [HackaPizza](https://hackathon.datapizza.com/), organized by the amazing team of [DataPizza](https://www.datapizza.tech/). It was a 24-hours event, held in Milan, Italy, in a very iconic and fascinating location: the IBM Studios, in Piazza Gae Aulenti. 
 
-![ibm](ibm.png#light)
+![alt text](ibm.png#light  "IBM Studios, image from Wikipedia")
 
-I was part of the team `4-omini` (very bad Italian joke), composed by me, Cristian, Andrea and Alessandro. There were 20 teams participating, each composed of 3 or 4 members, that had been chosen by the organizers among more than 600 applicatants. We knew that the bar was high, but we were ready to give our best.
+
+I was part of the team `4-omini` (very bad Italian joke), composed by me, Cristian, Andrea and Alessandro. There were 20 teams participating, each composed of 3 or 4 members, that had been chosen by the organizers among more than 600 applicants. We knew that the bar was high, but we were ready to give our best.
 
 
 
