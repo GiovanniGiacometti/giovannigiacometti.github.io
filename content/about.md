@@ -9,13 +9,13 @@ I currently work as a Machine Learning Engineer at [ML cube](https://www.mlcube.
 
 I hold a Master's degree in Artificial Intelligence from Politecnico di Milano and a Bachelor's degree in Computer Science from [Università Politecnica delle Marche](https://www.univpm.it/). During the second year of the Master, I had the opportunity to spend a semester at the [IT University of Copenhagen](https://en.itu.dk/) as an Erasmus student, which was an incredibly enriching experience.
 
-I enjoy building things, both related to AI and not. I like sharing things I know and learning from others. I love the feeling of being able to transform ideas into reality. I also believe that as developers we have to do our job responibly.
+I enjoy building things, both related to AI and not. I like sharing things I know and learning from others. I love the feeling of being able to transform ideas into reality. I also believe that as developers we have to do our job responsibly.
 
 -----
 
 Other random things about me:
 
-- In January 2025, I participated in the [DataPizza Hackathon](https://hackathon.datapizza.com/) and I was part of the team that got the 2nd place.
+- In January 2025, I participated in the [DataPizza Hackathon](https://hackathon.datapizza.com/) and I was part of the team that got the 2nd place. [Here](/posts/hackathon) is the write up I wrote about the experience.
 
 - In November 2024, I obtained the [Google Cloud Professional Machine Learning Engineer](https://cloud.google.com/learn/certification/machine-learning-engineer) certification.
 
