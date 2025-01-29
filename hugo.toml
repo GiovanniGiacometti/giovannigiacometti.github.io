@@ -21,8 +21,8 @@ homeIntroContent = """Welcome to my blog. I'm Giovanni, a Machine Learning Engin
 I just write about things I like. I hope you like them too!""" 
 
 # Collection to display on home
-homeCollectionTitle = ''
-homeCollection = false
+homeCollectionTitle = 'Recent Posts'
+homeCollection = 'posts'
 
 # Lists parameters
 paginationSize = 100
@@ -53,9 +53,9 @@ url = "/"
 name = "posts"
 url = "/posts"
 
-[[params.menu]]
-name = "til"
-url = "/til"
+# [[params.menu]]
+# name = "til"
+# url = "/til"
 
 # [[params.menu]]
 # name = "collection"

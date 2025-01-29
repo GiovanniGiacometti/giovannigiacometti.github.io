@@ -17,7 +17,7 @@ In the 18th and 19th of January 2025, I participated in my first Hackathon, [Hac
 ![ibm studios](ibm.png  "IBM Studios, image from Wikipedia")
 
 
-I was part of the team `4-omini` (very bad Italian joke), composed by me, Cristian, Andrea and Alessandro. There were 20 teams participating, each composed of 3 or 4 members, that had been chosen by the organizers among more than 600 applicants. We knew that the bar was high, but we were ready to give our best.
+I was part of the team `4-omini` (very bad Italian joke), composed by me, [Alessandro](https://www.linkedin.com/in/alecontu/), [Andrea](https://www.linkedin.com/in/andreacerasani/) and [Cristian](https://www.linkedin.com/in/cristian-c-spagnuolo/). There were 20 teams participating, each composed of 3 or 4 members, that had been chosen by the organizers among more than 600 applicants. We knew that the bar was high, but we were ready to give our best.
 
 
 ![4 omini picture](4-omini.jpeg  "4-omini, happy and tired after 24 hours of grinding")
@@ -29,7 +29,7 @@ In this write up, I will go through the highlights of the event as seen from our
 
 ## 12:30 - So it begins
 
-First things first: the challenge. After a brief introduction by the organizers, the cage was opened and we were given the text of the challenge. Here is a short summary, written by Claude 3.5:
+First things first: the challenge. After a brief introduction by the organizers, the cage was opened and we were given the text of the challenge. Here is a short summary, written by Claude Sonnet 3.5:
 
 ```
 "AI Challenge: Building an Intergalactic Restaurant Recommender"
@@ -56,13 +56,13 @@ Think of it as Yelp meets Star Wars, powered by AI.
 
 The summary is accurate, as the challenge was pretty straightforward. You might be thinking: "Well, that's a RAG". And you would be right. However, there were some complications that would make a naive RAG implementation miserably fail:
 
-- Documents were in Italian and all the members of this imaginary universe had very weird names, barely making any sense in Italian ("Sinfonia Cosmica all'Alba di Fenice", "Eclissi del Drago nell'Abbraccio del Kraken", ...). Standard LLMs would struggle to understand these entities if not properly instructed.
+- Documents were in Italian and all the members of this imaginary universe had very weird names, barely making any sense even in Italian ("Sinfonia Cosmica all'Alba di Fenice", "Eclissi del Drago nell'Abbraccio del Kraken", ...). Standard LLMs would struggle to understand these entities if not properly instructed.
 - The documents were not in a huge amount (around 60) but they were of mixed types: Pdfs, Html, Word, even a CSV. This surely complicated the data preprocessing phase.
-- The content of the documents was complex: they contained a lot of noise, they were not consistent with each other and most of them was not well structured. Some pages were blurred and others filled with unknown characters. Lots of information was spread across several documents, making it hard to retrieve necessary data to answer the queries. Additionally, the author of the challenge deliberately introduced typos and misleading information in the documents, making it even harder to extract the correct information. Yes, they were a mess.
+- The content of the documents was complex: they contained a lot of noise, they were not consistent with each other and most of them was not well structured. Some pages were blurred and others filled with unknown characters. Concepts were spread across several documents, making it difficult to gather the necessary information needed for a complete understanding. Additionally, the authors of the challenge deliberately introduced typos and misleading information, further complicating the task of extracting accurate information. Yes, they were a mess.
 
-Another relevant aspect of the challenge was the types of queries that our system was supposed to face. The questions provided were very specific and expected precise answers. This differs from typical RAG applications, where questions are more open-ended and the model can generate a wide range of (somewhat correct) answers. This meant that our retrieval systems should have both high precision and high recall, since likely all documents related to the query, even if not directly answering it, would be needed to answer it correctly. 
+Another relevant aspect of the challenge was the types of queries that our system was supposed to face. The questions provided were very specific and expected precise answers. This differs from typical RAG applications, where questions are more open-ended and the model can generate a wide range of (somewhat correct) answers. This meant that our retrieval system needed to demonstrate both high precision and high recall, as nearly all documents related to the query—even if they didn't directly provide the answer—were essential for accurate responses. 
 
-For instance, a query like "Quali piatti, preparati in un ristorante su Asgard, richiedono la licenza LTK non base e utilizzano Carne di Xenodonte?"("Which dishes, prepared in a restaurant on Asgard, require the non-base LTK license and use Xenodonte meat?") would need to retrieve the menu of all restaurants on Asgard, filter the dishes that include Xenodonte meat and then compare the resulting options with the requirements of the LTK license.
+For instance, a query like "Quali piatti, preparati in un ristorante su Asgard, richiedono la licenza LTK non base e utilizzano Carne di Xenodonte?"("Which dishes, prepared in a restaurant on Asgard, require the non-base LTK license and use Xenodonte meat?") would need to retrieve the menu of all restaurants on Asgard, filter the dishes that include Xenodonte meat and then compare the results with the requirements of the non-base LTK license, which would be stored in a different document, likely without direct mentions of dish or planet names.
 
 ## 13:00 - The first steps
 
@@ -70,12 +70,12 @@ The first hour of the challenge was basically only brainstorming. We knew that a
 
 We first designed our pipeline, which would be composed of 2 main steps:
 - **Ingestion**: this step is run only once and consists in parsing all documents into chunks of text and storing them in a vector database. We decided to apply semantic splitting, based on the structures of the documents, so that each chunk would contain a coherent piece of information. We chose [ChromaDB](https://www.trychroma.com/) as our vector database.
-- **RAG**: the core of the system. This step receives the query as input, retrieves the relevant chunks from the database and then generates the answer using an LLM. Since the final response was supposed to be the list of ids of the dishes answering the questions, we would have to implement an additional component in order to translate the response of the LLM into the correct format. We chose [LangGraph](https://www.langchain.com/langgraph) as the framework for our application.   
+- **RAG**: the core of the system. This step receives the query as input, retrieves the relevant chunks from the database and then generates the answer using an LLM. Since the final response was supposed to be the list of ids of the dishes answering the questions, we would have to implement an additional component in order to translate the response of the LLM into the correct format. We chose [LangGraph](https://www.langchain.com/langgraph) as the framework for our RAG pipeline.   
 
 
-As previously explained, we soon realized that a retrieval system based on similarity between embeddings would not be enough. We decided to opt for an hybrid approach based on metadata. The process we envisioned was the following:
+As previously explained, we thought that a retrieval system based only on similarity between embeddings would not be enough. We decided to opt for an hybrid approach based on metadata. The process we envisioned was the following:
 
-1) During the ingestion phase, we would ask an LLM to extract the metadata from each chunk of text. To make sure every chunk was correctly encapsulated in the context of the overall document, we would also add to each chunk some metadata extracted from the document as a whole. For instance, in the chunk related to a specific dish of a restaurant, we would add the metadata of the restaurant itself. All these metadata would then be stored in the vector database alongside the text.
+1) During the ingestion phase, we would ask an LLM to extract the metadata from each chunk of text. To make sure every chunk was correctly encapsulated in the context of the overall document, we would also add to each chunk the metadata extracted from the document as a whole. For instance, in the chunk related to a specific dish of a restaurant, we would add the metadata of the restaurant itself. All these metadata would then be stored in the vector database alongside the text.
 
 2) During the RAG phase, we would first ask an LLM to extract the relevant metadata from the query. Then, we would retrieve the chunks tagged with those metadata from the database and then apply the cosine similarity to retain only the most similar chunks (this is supported out of the box by the [LangChain integration](https://python.langchain.com/docs/integrations/vectorstores/chroma/#query-by-turning-into-retriever)). Finally, we would pass the resulting chunks to the LLM to generate the answer.
 
@@ -100,9 +100,11 @@ There were several problems within our metadata extraction process:
 
 The first point was easy to fix: add another step in the Ingestion phase to extract the additional metadata. The second point and third points were trickier: how do you make sure that the LLM doesn't come up with a new metadata? How do you ensure that it doesn't miss any information?
 
-We adopted the following approach: whenever asking the LLM to extract metadata, both in the ingestion and in the RAG phase, we would also provide it with all the metadata extracted up to that point. Moreover, we explicitly prompted the LLM to use an existing metadata whenever it finded a similar but not identical one. This helped the metadata set to be consistent. We leveraged prompt engineering also to foster the LLM to avoid missing metadata, by instructing it to look for "weird" names with capital letters. You can take a look at the final version of the prompt [here](https://github.com/GiovanniGiacometti/hackathon/blob/main/hackathon/graph/prompts.py#L218).
+We adopted the following approach: whenever we asked the LLM to extract metadata, both in the ingestion and in the RAG phase, we provided it with all previously extracted metadata. We explicitly instructed the LLM to reuse metadata if it spotted similar entries (even if slightly different, to account for typos).
 
-Tiredness was starting to show up, but it was time to go back coding.
+We leveraged prompt engineering also to foster the LLM to avoid missing metadata, by telling it to look for "weird" names with capital letters. You can take a look at the final version of the prompt [here](https://github.com/GiovanniGiacometti/hackathon/blob/main/hackathon/graph/prompts.py#L218).
+
+Tiredness was starting to show up, but it was time to put these ideas into practice.
 
 ## 05:00 - The first submission
 
@@ -115,11 +117,15 @@ Some things had changed in the meantime:
 
 Nonetheless, we were eager to see the results we would achieve. We executed the pipeline, obtained the CSV file, submitted it and ... 9%. As an italian proverb say: "Yes, it can get worse, it could have rained". We were a bit disappointed, but we couldn't afford wasting time. We were back in debugging mode. 
 
-We noticed that the metadata extraction and the successive filtering was working properly, but most of the times the chunks provided to the LLM were not helpful at all. This would happen in cases where the metadata filtering was too large, and the retrieved context would only be due to the cosine similarity, which was definitely not enough to provide relevant information. Unfortunately, these cases were the majority, since a lot of metadata were shared among the chunks and we were only able to filter metadata on exact matches.
+We noticed that the metadata extraction and the successive filtering were working properly, but most of the times the chunks provided to the LLM were not helpful at all. This happened in cases where the metadata filtering was too large, and the retrieved context would only be due to the cosine similarity, which was definitely not enough to distinguish relevant information from useless one. Unfortunately, these cases were the majority, since a lot of metadata were shared among the chunks and we were only able to filter metadata on exact matches.
 
 The problem was not in our code (you can see the filtering process [here](https://github.com/GiovanniGiacometti/hackathon/blob/main/hackathon/graph/nodes/retrieve.py)), but rather in the way we were treating the vector store. These systems are designed for embeddings and similarity operations, not for complex database-like querying. Metadata are usually simple and intended for straightforward filtering. While it is possible to build more advanced querying capabilities on top of them (which we did, to some extent), making it truly effective would require a more comprehensive implementation, which we didn't have time for.
 
-We were at a crossroad: on one hand, we could try to improve the retrieval system and the resilience of the pipeline. On the other hand, we could instead rethink our approach and try to use a proper database to store metadata and perform more complex queries on them. We were 4 people: we could do both and choose the best solution later. So we did.
+In addition to this, the issues with the embeddings similarity previously mentioned were starting to show up, further diminishing the relevance of the retrieved chunks..
+
+We were at a crossroad: on one hand, we could try to improve the retrieval system and the resilience of the pipeline. On the other hand, we could instead rethink our approach and try to use a proper database to store metadata and perform more complex queries on them. 
+
+We were 4 people: we could do both and choose the best solution later. And that's what we did.
 
 
 ## 08:30 -  Summer is coming
@@ -136,7 +142,7 @@ While the refactoring of the retrieval system was ongoing, we managed to improve
 
 We submitted multiple times during this process and results were improving. First 15%, then 25%, then 30%. We were getting better, but the highest part of the standings was still far away.
 
-Later, we realized that we were not retrieving enough chunks from the database. The document grader was helping, but if the few documents retrieved were not relevant, the context would be empty. Hence, we decided to increase the number, which was just a simple parameter in the retrieval component. We set it to 25 and ran the pipeline.
+Later, we realized that we were not retrieving enough chunks from the database. The document grader was helping, but if the few documents retrieved were not relevant, the context ended up empty. Hence, we decided to increase that number, which was just a simple parameter in the retrieval component. We set it to 25 and ran the pipeline.
 
 In the meantime, the refactoring of the retrieval system was completed. We opted for MongoDB as the database to store metadata and the documents. The retrieval consisted in asking an LLM to generate a query based on the question and its metadata. If the query was wrong or returning no documents, we would tell the LLM to generate another one, providing it with the previous query and the reason why it was not working, for a total of maximum 3 attempts. Once the query was correct, we would just pass the retrieved documents to the LLM to generate the answer. The vector database? Thrown in the trash. 
 
@@ -176,9 +182,12 @@ The competition was over. The leaderboard didn't change in the last minutes: we 
 
 We were happy, we knew we had done our best. However, it was not done yet. The leaderboard score was not enough to grant us the second place. We had to present our solution to the jury, who would then decide the final standings based on the score, the quality of the solution and the presentation itself.
 
+
 Here is the video of the presentations. We start at 01:03:20.
 
 [![youtube video](pres.png "Final presentations video")](https://youtu.be/xtPupeMEooE?t=3803)
+
+---
 
 After the presentation session, it was really over and the adrenaline started to fade. 
 
@@ -188,4 +197,25 @@ After waiting for what looked like an endless time, the jury announced the final
 ![final photo](finalphoto.jpg  "4-omini and DataPizza team")
 
 
+## Learnings
+
+This was really an amazing experience, but an instructive one as well.
+
+We learned that an hackathon is not just about coding. It's about teamwork, communication, persistence, even when things are not going as expected. These characteristics also apply to life, and I'm grateful for this opportunity, which really put us to the test.
+
+We learned there are great people out there, competent and passionate about what they do and keen on sharing their knowledge. Every person I met there gave me something and it really made me understand the power of the community. 
+
+Sorround yourself with builders, not talkers.
+
+From a technical point of view, we can summarize our learnings in a single sentence: quoting [something historical](https://peps.python.org/pep-0020/), "simple is better than complex". Sometimes you need to start from the basics and, only if needed, add complexity. 
+
+
 ## Conclusion
+
+I'm deeply grateful to the DataPizza team for organizing such an amazing event. 
+
+I also want to thank IBM for hosting us and making us feel at home.
+
+Last but not least, 4-omini: it was a pleasure to work with you. 
+
+When will the next one be? 😎

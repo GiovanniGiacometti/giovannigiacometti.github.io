@@ -103,13 +103,6 @@
         
       
         <p class="small ">
-            <a href="/til" >
-                /til
-            </a>
-        </p>
-        
-      
-        <p class="small ">
             <a href="/about" >
                 /about
             </a>
@@ -166,7 +159,7 @@
 
       
       &nbsp; · &nbsp;
-      15 min read
+      16 min read
       
     </p>
 
@@ -188,6 +181,7 @@
     <li><a href="#0830----summer-is-coming">08:30 -  Summer is coming</a></li>
     <li><a href="#1200---last-mile">12:00 - Last mile</a></li>
     <li><a href="#1230---the-end">12:30 - The end</a></li>
+    <li><a href="#learnings">Learnings</a></li>
     <li><a href="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
@@ -223,7 +217,7 @@
     
 </figure>
 </p>
-<p>I was part of the team <code>4-omini</code> (very bad Italian joke), composed by me, Cristian, Andrea and Alessandro. There were 20 teams participating, each composed of 3 or 4 members, that had been chosen by the organizers among more than 600 applicants. We knew that the bar was high, but we were ready to give our best.</p>
+<p>I was part of the team <code>4-omini</code> (very bad Italian joke), composed by me, <a href="https://www.linkedin.com/in/alecontu/">Alessandro</a>, <a href="https://www.linkedin.com/in/andreacerasani/">Andrea</a> and <a href="https://www.linkedin.com/in/cristian-c-spagnuolo/">Cristian</a>. There were 20 teams participating, each composed of 3 or 4 members, that had been chosen by the organizers among more than 600 applicants. We knew that the bar was high, but we were ready to give our best.</p>
 <p>
 
 
@@ -255,7 +249,7 @@
   12:30 - So it begins
   <a href="#1230---so-it-begins">#</a>
 </h2>
-<p>First things first: the challenge. After a brief introduction by the organizers, the cage was opened and we were given the text of the challenge. Here is a short summary, written by Claude 3.5:</p>
+<p>First things first: the challenge. After a brief introduction by the organizers, the cage was opened and we were given the text of the challenge. Here is a short summary, written by Claude Sonnet 3.5:</p>
 <pre tabindex="0"><code>&#34;AI Challenge: Building an Intergalactic Restaurant Recommender&#34;
 
 Set in a sci-fi universe where interstellar dining is the norm, 
@@ -278,12 +272,12 @@ and innovation in approach.
 Think of it as Yelp meets Star Wars, powered by AI.
 </code></pre><p>The summary is accurate, as the challenge was pretty straightforward. You might be thinking: &ldquo;Well, that&rsquo;s a RAG&rdquo;. And you would be right. However, there were some complications that would make a naive RAG implementation miserably fail:</p>
 <ul>
-<li>Documents were in Italian and all the members of this imaginary universe had very weird names, barely making any sense in Italian (&ldquo;Sinfonia Cosmica all&rsquo;Alba di Fenice&rdquo;, &ldquo;Eclissi del Drago nell&rsquo;Abbraccio del Kraken&rdquo;, &hellip;). Standard LLMs would struggle to understand these entities if not properly instructed.</li>
+<li>Documents were in Italian and all the members of this imaginary universe had very weird names, barely making any sense even in Italian (&ldquo;Sinfonia Cosmica all&rsquo;Alba di Fenice&rdquo;, &ldquo;Eclissi del Drago nell&rsquo;Abbraccio del Kraken&rdquo;, &hellip;). Standard LLMs would struggle to understand these entities if not properly instructed.</li>
 <li>The documents were not in a huge amount (around 60) but they were of mixed types: Pdfs, Html, Word, even a CSV. This surely complicated the data preprocessing phase.</li>
-<li>The content of the documents was complex: they contained a lot of noise, they were not consistent with each other and most of them was not well structured. Some pages were blurred and others filled with unknown characters. Lots of information was spread across several documents, making it hard to retrieve necessary data to answer the queries. Additionally, the author of the challenge deliberately introduced typos and misleading information in the documents, making it even harder to extract the correct information. Yes, they were a mess.</li>
+<li>The content of the documents was complex: they contained a lot of noise, they were not consistent with each other and most of them was not well structured. Some pages were blurred and others filled with unknown characters. Concepts were spread across several documents, making it difficult to gather the necessary information needed for a complete understanding. Additionally, the authors of the challenge deliberately introduced typos and misleading information, further complicating the task of extracting accurate information. Yes, they were a mess.</li>
 </ul>
-<p>Another relevant aspect of the challenge was the types of queries that our system was supposed to face. The questions provided were very specific and expected precise answers. This differs from typical RAG applications, where questions are more open-ended and the model can generate a wide range of (somewhat correct) answers. This meant that our retrieval systems should have both high precision and high recall, since likely all documents related to the query, even if not directly answering it, would be needed to answer it correctly.</p>
-<p>For instance, a query like &ldquo;Quali piatti, preparati in un ristorante su Asgard, richiedono la licenza LTK non base e utilizzano Carne di Xenodonte?&rdquo;(&ldquo;Which dishes, prepared in a restaurant on Asgard, require the non-base LTK license and use Xenodonte meat?&rdquo;) would need to retrieve the menu of all restaurants on Asgard, filter the dishes that include Xenodonte meat and then compare the resulting options with the requirements of the LTK license.</p>
+<p>Another relevant aspect of the challenge was the types of queries that our system was supposed to face. The questions provided were very specific and expected precise answers. This differs from typical RAG applications, where questions are more open-ended and the model can generate a wide range of (somewhat correct) answers. This meant that our retrieval system needed to demonstrate both high precision and high recall, as nearly all documents related to the query—even if they didn&rsquo;t directly provide the answer—were essential for accurate responses.</p>
+<p>For instance, a query like &ldquo;Quali piatti, preparati in un ristorante su Asgard, richiedono la licenza LTK non base e utilizzano Carne di Xenodonte?&rdquo;(&ldquo;Which dishes, prepared in a restaurant on Asgard, require the non-base LTK license and use Xenodonte meat?&rdquo;) would need to retrieve the menu of all restaurants on Asgard, filter the dishes that include Xenodonte meat and then compare the results with the requirements of the non-base LTK license, which would be stored in a different document, likely without direct mentions of dish or planet names.</p>
 <h2 class="heading" id="1300---the-first-steps">
   13:00 - The first steps
   <a href="#1300---the-first-steps">#</a>
@@ -292,12 +286,12 @@ Think of it as Yelp meets Star Wars, powered by AI.
 <p>We first designed our pipeline, which would be composed of 2 main steps:</p>
 <ul>
 <li><strong>Ingestion</strong>: this step is run only once and consists in parsing all documents into chunks of text and storing them in a vector database. We decided to apply semantic splitting, based on the structures of the documents, so that each chunk would contain a coherent piece of information. We chose <a href="https://www.trychroma.com/">ChromaDB</a> as our vector database.</li>
-<li><strong>RAG</strong>: the core of the system. This step receives the query as input, retrieves the relevant chunks from the database and then generates the answer using an LLM. Since the final response was supposed to be the list of ids of the dishes answering the questions, we would have to implement an additional component in order to translate the response of the LLM into the correct format. We chose <a href="https://www.langchain.com/langgraph">LangGraph</a> as the framework for our application.</li>
+<li><strong>RAG</strong>: the core of the system. This step receives the query as input, retrieves the relevant chunks from the database and then generates the answer using an LLM. Since the final response was supposed to be the list of ids of the dishes answering the questions, we would have to implement an additional component in order to translate the response of the LLM into the correct format. We chose <a href="https://www.langchain.com/langgraph">LangGraph</a> as the framework for our RAG pipeline.</li>
 </ul>
-<p>As previously explained, we soon realized that a retrieval system based on similarity between embeddings would not be enough. We decided to opt for an hybrid approach based on metadata. The process we envisioned was the following:</p>
+<p>As previously explained, we thought that a retrieval system based only on similarity between embeddings would not be enough. We decided to opt for an hybrid approach based on metadata. The process we envisioned was the following:</p>
 <ol>
 <li>
-<p>During the ingestion phase, we would ask an LLM to extract the metadata from each chunk of text. To make sure every chunk was correctly encapsulated in the context of the overall document, we would also add to each chunk some metadata extracted from the document as a whole. For instance, in the chunk related to a specific dish of a restaurant, we would add the metadata of the restaurant itself. All these metadata would then be stored in the vector database alongside the text.</p>
+<p>During the ingestion phase, we would ask an LLM to extract the metadata from each chunk of text. To make sure every chunk was correctly encapsulated in the context of the overall document, we would also add to each chunk the metadata extracted from the document as a whole. For instance, in the chunk related to a specific dish of a restaurant, we would add the metadata of the restaurant itself. All these metadata would then be stored in the vector database alongside the text.</p>
 </li>
 <li>
 <p>During the RAG phase, we would first ask an LLM to extract the relevant metadata from the query. Then, we would retrieve the chunks tagged with those metadata from the database and then apply the cosine similarity to retain only the most similar chunks (this is supported out of the box by the <a href="https://python.langchain.com/docs/integrations/vectorstores/chroma/#query-by-turning-into-retriever">LangChain integration</a>). Finally, we would pass the resulting chunks to the LLM to generate the answer.</p>
@@ -324,8 +318,9 @@ Think of it as Yelp meets Star Wars, powered by AI.
 </li>
 </ul>
 <p>The first point was easy to fix: add another step in the Ingestion phase to extract the additional metadata. The second point and third points were trickier: how do you make sure that the LLM doesn&rsquo;t come up with a new metadata? How do you ensure that it doesn&rsquo;t miss any information?</p>
-<p>We adopted the following approach: whenever asking the LLM to extract metadata, both in the ingestion and in the RAG phase, we would also provide it with all the metadata extracted up to that point. Moreover, we explicitly prompted the LLM to use an existing metadata whenever it finded a similar but not identical one. This helped the metadata set to be consistent. We leveraged prompt engineering also to foster the LLM to avoid missing metadata, by instructing it to look for &ldquo;weird&rdquo; names with capital letters. You can take a look at the final version of the prompt <a href="https://github.com/GiovanniGiacometti/hackathon/blob/main/hackathon/graph/prompts.py#L218">here</a>.</p>
-<p>Tiredness was starting to show up, but it was time to go back coding.</p>
+<p>We adopted the following approach: whenever we asked the LLM to extract metadata, both in the ingestion and in the RAG phase, we provided it with all previously extracted metadata. We explicitly instructed the LLM to reuse metadata if it spotted similar entries (even if slightly different, to account for typos).</p>
+<p>We leveraged prompt engineering also to foster the LLM to avoid missing metadata, by telling it to look for &ldquo;weird&rdquo; names with capital letters. You can take a look at the final version of the prompt <a href="https://github.com/GiovanniGiacometti/hackathon/blob/main/hackathon/graph/prompts.py#L218">here</a>.</p>
+<p>Tiredness was starting to show up, but it was time to put these ideas into practice.</p>
 <h2 class="heading" id="0500---the-first-submission">
   05:00 - The first submission
   <a href="#0500---the-first-submission">#</a>
@@ -338,9 +333,11 @@ Think of it as Yelp meets Star Wars, powered by AI.
 <li>The leaderboard was updated: the team that had scored 58% was now at 67% and another team submitted a solution that scored 63%. The bar was getting higher.</li>
 </ul>
 <p>Nonetheless, we were eager to see the results we would achieve. We executed the pipeline, obtained the CSV file, submitted it and &hellip; 9%. As an italian proverb say: &ldquo;Yes, it can get worse, it could have rained&rdquo;. We were a bit disappointed, but we couldn&rsquo;t afford wasting time. We were back in debugging mode.</p>
-<p>We noticed that the metadata extraction and the successive filtering was working properly, but most of the times the chunks provided to the LLM were not helpful at all. This would happen in cases where the metadata filtering was too large, and the retrieved context would only be due to the cosine similarity, which was definitely not enough to provide relevant information. Unfortunately, these cases were the majority, since a lot of metadata were shared among the chunks and we were only able to filter metadata on exact matches.</p>
+<p>We noticed that the metadata extraction and the successive filtering were working properly, but most of the times the chunks provided to the LLM were not helpful at all. This happened in cases where the metadata filtering was too large, and the retrieved context would only be due to the cosine similarity, which was definitely not enough to distinguish relevant information from useless one. Unfortunately, these cases were the majority, since a lot of metadata were shared among the chunks and we were only able to filter metadata on exact matches.</p>
 <p>The problem was not in our code (you can see the filtering process <a href="https://github.com/GiovanniGiacometti/hackathon/blob/main/hackathon/graph/nodes/retrieve.py">here</a>), but rather in the way we were treating the vector store. These systems are designed for embeddings and similarity operations, not for complex database-like querying. Metadata are usually simple and intended for straightforward filtering. While it is possible to build more advanced querying capabilities on top of them (which we did, to some extent), making it truly effective would require a more comprehensive implementation, which we didn&rsquo;t have time for.</p>
-<p>We were at a crossroad: on one hand, we could try to improve the retrieval system and the resilience of the pipeline. On the other hand, we could instead rethink our approach and try to use a proper database to store metadata and perform more complex queries on them. We were 4 people: we could do both and choose the best solution later. So we did.</p>
+<p>In addition to this, the issues with the embeddings similarity previously mentioned were starting to show up, further diminishing the relevance of the retrieved chunks..</p>
+<p>We were at a crossroad: on one hand, we could try to improve the retrieval system and the resilience of the pipeline. On the other hand, we could instead rethink our approach and try to use a proper database to store metadata and perform more complex queries on them.</p>
+<p>We were 4 people: we could do both and choose the best solution later. And that&rsquo;s what we did.</p>
 <h2 class="heading" id="0830----summer-is-coming">
   08:30 -  Summer is coming
   <a href="#0830----summer-is-coming">#</a>
@@ -354,7 +351,7 @@ Think of it as Yelp meets Star Wars, powered by AI.
 <li>we added a new component of the graph, which would take in input all the chunks retrieved from the vector database and, for each of them, ask an LLM if it was relevant to the query. If not, it would be discarded. The idea behind this approach is to reduce the noise passed to the final LLM, who would then hopefully receive only useful chunks.</li>
 </ul>
 <p>We submitted multiple times during this process and results were improving. First 15%, then 25%, then 30%. We were getting better, but the highest part of the standings was still far away.</p>
-<p>Later, we realized that we were not retrieving enough chunks from the database. The document grader was helping, but if the few documents retrieved were not relevant, the context would be empty. Hence, we decided to increase the number, which was just a simple parameter in the retrieval component. We set it to 25 and ran the pipeline.</p>
+<p>Later, we realized that we were not retrieving enough chunks from the database. The document grader was helping, but if the few documents retrieved were not relevant, the context ended up empty. Hence, we decided to increase that number, which was just a simple parameter in the retrieval component. We set it to 25 and ran the pipeline.</p>
 <p>In the meantime, the refactoring of the retrieval system was completed. We opted for MongoDB as the database to store metadata and the documents. The retrieval consisted in asking an LLM to generate a query based on the question and its metadata. If the query was wrong or returning no documents, we would tell the LLM to generate another one, providing it with the previous query and the reason why it was not working, for a total of maximum 3 attempts. Once the query was correct, we would just pass the retrieved documents to the LLM to generate the answer. The vector database? Thrown in the trash.</p>
 <p>Beware that since we were developing on different branches, the pipeline with the new retrieval system didn&rsquo;t include all the optimizations we implemented in the last hours. However, just to give it an initial spin, we ran it.</p>
 <p>At that point, two evaluation files were ready. We first submitted the one with the previous optimized pipelines and a few seconds later the one with the new retrieval system.</p>
@@ -388,7 +385,7 @@ Think of it as Yelp meets Star Wars, powered by AI.
 <figure class="">
 
     <div>
-        <img loading="lazy" alt="final pipeline" src="/posts/hackathon/pipe.png" width="1457px" height="612px">
+        <img loading="lazy" alt="final pipeline" src="/posts/hackathon/pipe.png" width="1801px" height="647px">
     </div>
 
     
@@ -430,6 +427,7 @@ Think of it as Yelp meets Star Wars, powered by AI.
     
 </figure>
 </a></p>
+<hr>
 <p>After the presentation session, it was really over and the adrenaline started to fade.</p>
 <p>After waiting for what looked like an endless time, the jury announced the final standings. They confirmed the standings of the leaderboard: we were second!</p>
 <p>
@@ -457,10 +455,23 @@ Think of it as Yelp meets Star Wars, powered by AI.
     
 </figure>
 </p>
+<h2 class="heading" id="learnings">
+  Learnings
+  <a href="#learnings">#</a>
+</h2>
+<p>This was really an amazing experience, but an instructive one as well.</p>
+<p>We learned that an hackathon is not just about coding. It&rsquo;s about teamwork, communication, persistence, even when things are not going as expected. These characteristics also apply to life, and I&rsquo;m grateful for this opportunity, which really put us to the test.</p>
+<p>We learned there are great people out there, competent and passionate about what they do and keen on sharing their knowledge. Every person I met there gave me something and it really made me understand the power of the community.</p>
+<p>Sorround yourself with builders, not talkers.</p>
+<p>From a technical point of view, we can summarize our learnings in a single sentence: quoting <a href="https://peps.python.org/pep-0020/">something historical</a>, &ldquo;simple is better than complex&rdquo;. Sometimes you need to start from the basics and, only if needed, add complexity.</p>
 <h2 class="heading" id="conclusion">
   Conclusion
   <a href="#conclusion">#</a>
 </h2>
+<p>I&rsquo;m deeply grateful to the DataPizza team for organizing such an amazing event.</p>
+<p>I also want to thank IBM for hosting us and making us feel at home.</p>
+<p>Last but not least, 4-omini: it was a pleasure to work with you.</p>
+<p>When will the next one be? 😎</p>
 
     
   </div>
