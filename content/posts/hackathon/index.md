@@ -1,8 +1,8 @@
 ---
 date : '2025-01-28T00:19:06+01:00'
-title : 'HackaPizza 2025: the write-up of my first Hackathon'
-summary: "The story of how we got the 2nd place in the DataPizza Hackathon"
-description: "The story of my first hackathon, HackaPizza 2025"
+title : 'Hackapizza 2025: the write-up of my first Hackathon'
+summary: "The story of how we got the 2nd place in the Datapizza Hackathon"
+description: "The story of my first hackathon, Hackapizza 2025"
 toc: true
 readTime: true
 autonumber: false
@@ -12,7 +12,7 @@ showTags: false
 ---
 
 
-In the 18th and 19th of January 2025, I participated in my first Hackathon, [HackaPizza](https://hackathon.datapizza.com/), organized by the amazing team of [DataPizza](https://www.datapizza.tech/). It was a 24-hours event, held in Milan, Italy, in a very iconic and fascinating location: the IBM Studios, in Piazza Gae Aulenti. 
+In the 18th and 19th of January 2025, I participated in my first Hackathon, [Hackapizza](https://hackathon.datapizza.com/), organized by the amazing team of [Datapizza](https://www.datapizza.tech/). It was a 24-hours event, held in Milan, Italy, in a very iconic and fascinating location: the IBM Studios, in Piazza Gae Aulenti. 
 
 ![ibm studios](ibm.png  "IBM Studios, image from Wikipedia")
 
@@ -194,7 +194,7 @@ After the presentation session, it was really over and the adrenaline started to
 After waiting for what looked like an endless time, the jury announced the final standings. They confirmed the standings of the leaderboard: we were second!
 
 
-![final photo](finalphoto.jpg  "4-omini and DataPizza team")
+![final photo](finalphoto.jpg  "4-omini and Datapizza team")
 
 
 ## Learnings
@@ -212,7 +212,7 @@ From a technical point of view, we can summarize our learnings in a single sente
 
 ## Conclusion
 
-I'm deeply grateful to the DataPizza team for organizing such an amazing event. 
+I'm deeply grateful to the Datapizza team for organizing such an amazing event. 
 
 I also want to thank IBM for hosting us and making us feel at home.
 
