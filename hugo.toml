@@ -30,7 +30,7 @@ listSummaries = true
 listDateFormat = '2 Jan 2006'
 
 showFooter = true
-footerContent = "Proud to be different @ Giovanni Giacometti"
+footerContent = "For people proud to be different @ Giovanni Giacometti"
 
 # Breadcrumbs
 breadcrumbs = true
