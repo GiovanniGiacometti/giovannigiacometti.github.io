@@ -20,7 +20,11 @@ defaults:
     shell: bash
 
 jobs:
+
   build:
+
+    # only if commit message contains [deploy]
+    if: contains(github.event.head_commit.message, '[deploy]')
     runs-on: ubuntu-latest
     env:
       HUGO_VERSION: 0.140.2
@@ -56,6 +60,8 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    # maybe not needed
+    if: contains(github.event.head_commit.message, '[deploy]')
     needs: build
     steps:
       - name: Deploy to GitHub Pages

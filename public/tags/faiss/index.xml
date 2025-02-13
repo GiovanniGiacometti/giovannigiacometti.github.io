@@ -9,11 +9,11 @@
     <lastBuildDate>Tue, 28 Jan 2025 00:19:06 +0100</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/faiss/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>HackaPizza 2025: the write-up of my first Hackathon</title>
+      <title>Hackapizza 2025: the write-up of my first Hackathon</title>
       <link>http://localhost:1313/posts/hackathon/</link>
       <pubDate>Tue, 28 Jan 2025 00:19:06 +0100</pubDate>
       <guid>http://localhost:1313/posts/hackathon/</guid>
-      <description>The story of how we got the 2nd place in the DataPizza Hackathon</description>
+      <description>The story of how we got the 2nd place in the Datapizza Hackathon</description>
     </item>
   </channel>
 </rss>
