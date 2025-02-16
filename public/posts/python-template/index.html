@@ -33,8 +33,8 @@
   <meta property="og:locale" content="en_us">
   <meta property="og:type" content="article">
     <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2025-02-11T00:00:00+00:00">
-    <meta property="article:modified_time" content="2025-02-11T00:00:00+00:00">
+    <meta property="article:published_time" content="2025-02-15T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-02-15T00:00:00+00:00">
     <meta property="article:tag" content="Python">
     <meta property="article:tag" content="Template">
     <meta property="article:tag" content="Uv">
@@ -154,12 +154,12 @@
       
       
       
-      <time datetime="2025-02-11T00:00:00&#43;00:00">February 11, 2025</time>
+      <time datetime="2025-02-15T00:00:00&#43;00:00">February 15, 2025</time>
       
 
       
       &nbsp; · &nbsp;
-      2 min read
+      4 min read
       
     </p>
 
@@ -177,6 +177,7 @@
     <li><a href="#foundations">Foundations</a></li>
     <li><a href="#development-tools">Development Tools</a></li>
     <li><a href="#infrastructure">Infrastructure</a></li>
+    <li><a href="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
   </aside>
@@ -188,7 +189,7 @@
     <p>A repository template is a <a href="https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template">Github feature</a>
 that allows you to create a new repository with the same directory structure and files as the template repository.</p>
 <p>This can be incredibly useful, as it lets you skip the boring setup process and dive straight into building your project.</p>
-<p>I recently created a Python repository template, which you can check out in this <a href="https://github.com/GiovanniGiacometti/python-repo-template">repository</a>.
+<p>I recently created a Python repository template, which you can check out in <a href="https://github.com/GiovanniGiacometti/python-repo-template">this repository</a>.
 While you&rsquo;re welcome to fork it and use it as is,
 I highly recommend building your own template tailored to your specific needs and preferences.
 After all, it’s unlikely that a template made by someone else will perfectly match your requirements.</p>
@@ -205,25 +206,66 @@ but I encourage you to check out the original post as well, as the discussion co
 project manager, written in Rust&rdquo;. Despite being relatively new (it was released in February 2024) it&rsquo;s rapidly becoming
 the de-facto standard for Python package management, replacing famous well-established tool like <code>pip</code>, <code>poetry</code> or <code>pdm</code>.</p>
 <p><code>Just</code> is a command runner inspired by <code>make</code>, but with a simpler syntax and many improvements. It allows you to define
-recipes that can accept arguments and even supports writing recipes in various languages, such as Python. Like uv, it’s also written in Rust
+commands that can accept arguments and even supports writing recipes in various languages, such as Python. Like uv, it’s also written in Rust
 (it looks like it&rsquo;s becoming a thing).</p>
 <blockquote>
 <p>The choice of Just was one of the most debated topics in the Reddit discussion. A <em>huge</em> number of alternatives were suggested,
 such as <code>pyinvoke</code>, <code>taskfile</code> or <code>poethepoet</code>. Some argued against installing another command runner, insisting that <code>make</code>
-was enough for their needs. Others even claimed that command runners are not needed at all, &ldquo;since you can just define
+was enough for their needs. Others even claimed that command runners are not needed at all, since &ldquo;you can just define
 shell scripts&rdquo; (???).</p>
 <p>To be honest, I wasn&rsquo;t aware of all these alternatives when I made my choice. I wanted to find an alternative to <code>make</code>,
-and I found <code>Just</code> to be the most promising. I&rsquo;m happy with my decision, but I don’t expect it to be the ideal choice for everyone.-
+and I found <code>Just</code> to be the most promising. I&rsquo;m happy with my decision, but I don’t expect it to be the ideal choice for everyone.
 As mentioned before, I encourage you to explore different options and choose the one that suits you best.</p>
 </blockquote>
 <h2 class="heading" id="development-tools">
   Development Tools
   <a href="#development-tools">#</a>
 </h2>
+<p>Let&rsquo;s now go over the development tools I included in the template. Most of these can be invoked using Just commands. For more details, check out the <a href="https://github.com/GiovanniGiacometti/python-repo-template/blob/main/README.md">README.md</a>.</p>
+<ul>
+<li>
+<p><a href="https://docs.astral.sh/ruff/"><code>Ruff</code></a>: an extremely fast linter and code formatter.</p>
+</li>
+<li>
+<p><a href="https://mypy.readthedocs.io/en/stable/"><code>MyPy</code></a>: a static type checker for Python. All the code I write has type hints, which means that MyPy is a must-have tool for me.</p>
+</li>
+</ul>
+<blockquote>
+<p>I was asked why both Ruff and MyPy are needed. The answer is simple: they do different things. You can find a more detailed explanation in Ruff&rsquo;s <a href="https://docs.astral.sh/ruff/faq/#how-does-ruff-compare-to-mypy-or-pyright-or-pyre">documentation</a></p>
+</blockquote>
+<ul>
+<li>
+<p><a href="https://docs.pytest.org/en/7.0.1/"><code>Pytest</code></a>: one of the most known Python testing framework. I included a basic test suite in the template, which you can expand as needed.</p>
+</li>
+<li>
+<p><a href="https://black.vercel.app/"><code>Loguru</code></a>: this might seem an unconventional choice, but I included this logging library because I use it in most of my projects and find it convenient to have it pre-configured.</p>
+</li>
+</ul>
 <h2 class="heading" id="infrastructure">
   Infrastructure
   <a href="#infrastructure">#</a>
 </h2>
+<p>The template also comes with some infrastructure and CI/CD tools:</p>
+<ul>
+<li>
+<p><a href="https://pre-commit.com/"><code>Pre-commit</code></a>: I didn&rsquo;t know about this framework when I first created the template, but it was recommended in a Reddit comment, so I decided to integrate it. It allows you to manage your pre-commit hooks in a simple and unified way. The current configuration is very basic (it only runs the formatter), but you can easily expand it.</p>
+</li>
+<li>
+<p><a href="https://github.com/GiovanniGiacometti/python-repo-template/blob/main/.github/workflows/main-lint-test.yaml"><code>Github Actions</code></a>: the template contains a simple workflow that runs the linter and the tests on every push on the main branch.</p>
+</li>
+<li>
+<p><a href="https://www.docker.com/"><code>Docker</code></a>: the template comes with a Dockerfile that you can use to build a container. It&rsquo;s inspired by <a href="https://github.com/astral-sh/uv-docker-example/blob/main/multistage.Dockerfile">this example</a> and uses a multi-stage build that eventually creates a small image containing the source code and the environment, without including uv.</p>
+</li>
+</ul>
+<hr>
+<blockquote>
+<p>A common question I received was along the lines of: &ldquo;Why didn’t you include X?&rdquo; Honestly, I don’t always have a great answer — most likely, I wasn’t aware of X or simply didn’t think it was necessary. However, I’m always open to suggestions, and you probably have a good reason for recommending it.</p>
+</blockquote>
+<h2 class="heading" id="conclusion">
+  Conclusion
+  <a href="#conclusion">#</a>
+</h2>
+<p>I hope you found this blog post and the template useful! If you have any questions or feedback, feel free to write me a message or open an issue on the repository.</p>
 
     
   </div>
