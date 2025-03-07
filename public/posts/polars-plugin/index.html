@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en-us"
+  dir="ltr">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+
+
+
+<link rel="icon" type="image/ico" href="http://localhost:1313//favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313//favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313//favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="http://localhost:1313//android-chrome-192x192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="http://localhost:1313//apple-touch-icon.png">
+
+<meta name="description" content="The description of my first Polars plugin"/>
+
+
+
+<title>
+    
+    I wrote a Polars plugin - and it&#39;s easier than you think | Giovanni Giacometti
+    
+</title>
+
+<link rel="canonical" href="http://localhost:1313/posts/polars-plugin/"/>
+
+<meta property="og:url" content="http://localhost:1313/posts/polars-plugin/">
+  <meta property="og:site_name" content="Giovanni Giacometti">
+  <meta property="og:title" content="I wrote a Polars plugin - and it&#39;s easier than you think">
+  <meta property="og:description" content="The description of my first Polars plugin">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-03-07T20:02:29+01:00">
+    <meta property="article:modified_time" content="2025-03-07T20:02:29+01:00">
+    <meta property="article:tag" content="Python">
+    <meta property="article:tag" content="Polars">
+    <meta property="article:tag" content="Rust">
+    <meta property="article:tag" content="Numpy">
+    <meta property="article:tag" content="Argpartition">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/assets/combined.min.a904013acd8e3bd04ce56a64a8fe5525fd5f738ad6caa0bfbcbe39a8d7ed932d.css" media="all">
+
+
+
+
+
+</head>
+
+
+
+
+
+
+
+<body class="auto">
+
+  <div class="content">
+    <header>
+      
+
+<div class="header">
+
+    
+
+    <h1 class="header-title">
+        <a href="http://localhost:1313/">Giovanni Giacometti</a>
+    </h1>
+
+    <div class="flex">
+        
+
+        
+        
+      
+        <p class="small ">
+            <a href="/" >
+                /home
+            </a>
+        </p>
+        
+      
+        <p class="small ">
+            <a href="/posts" >
+                /posts
+            </a>
+        </p>
+        
+      
+        <p class="small ">
+            <a href="/about" >
+                /about
+            </a>
+        </p>
+        
+        
+    </div>
+
+    
+
+</div>
+
+    </header>
+
+    <main class="main">
+      
+
+
+
+
+
+<div class="breadcrumbs">
+    
+    <a href="/">Home</a>
+    <span class="breadcrumbs-separator"> > </span>
+    
+    <a href="/posts/">Posts</a>
+    <span class="breadcrumbs-separator"> > </span>
+    
+    <a class="breadcrumbs-current" href="/posts/polars-plugin/">I wrote a Polars plugin - and it&#39;s easier than you think</a>
+</div>
+
+
+
+<div >
+
+  <div class="single-intro-container">
+
+    
+
+    <h1 class="single-title">I wrote a Polars plugin - and it&#39;s easier than you think</h1>
+    
+    <p class="single-summary">My first Polars plugin, <code>polars-argpartition</code></p>
+    
+
+    
+
+    <p class="single-readtime">
+      
+      
+      
+      <time datetime="2025-03-07T20:02:29&#43;01:00">March 7, 2025</time>
+      
+
+      
+      &nbsp; · &nbsp;
+      3 min read
+      
+    </p>
+
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  <div class="single-content">
+    <p><a href="https://pola.rs/">Polars</a> is an excellent DataFrame library, written in Rust, and it has become my go-to tool for data manipulation in Python. It&rsquo;s fast, has a clean syntax and offers powerful capabilities that, in many ways, make it superior to Pandas.</p>
+<p>One feature that many people overlook is the ability to extend its functionality with <a href="https://docs.pola.rs/user-guide/plugins/">custom plugins</a>.</p>
+<p>The idea is simple: Polars is shipped with a rich set of functions and options that cover 99% of common use cases. However, there are times when you might still need to implement some custom logic for which prebuilt functions are not enough.</p>
+<p>In those cases, you have two options:</p>
+<ul>
+<li>Implement it in Python using <a href="https://docs.pola.rs/api/python/dev/reference/expressions/api/polars.Expr.map_elements.html"><code>map_elements</code></a>.</li>
+<li>Implement it in Rust, register the function as a plugin and use it seamlessly in your expressions.</li>
+</ul>
+<p><a href="https://docs.pola.rs/user-guide/expressions/user-defined-python-functions/">The documentation</a> makes it clear that the first option should always be avoided: <code>map_elements</code> is slow and doesn&rsquo;t support lazy execution.</p>
+<p>That said, writing a plugin in Rust requires knowing Rust. For those used to Python, Rust can feel like a steep learning curve.</p>
+<p>But here’s the good news: if your logic isn’t too complex, you don’t need to be a Rust expert. This <a href="https://marcogorelli.github.io/polars-plugins-tutorial/">fantastic guide</a> by Marco Gorelli takes you 90% of the way there (and another 7/8% can be covered with LLMs 🙃).</p>
+<p>Thanks to these tools, I was able to build my own Polars plugin, <code>polars-argpartition</code>!</p>
+<h2 class="heading" id="the-plugin---polars-argpartition">
+  The plugin - <code>polars-argpartition</code>
+  <a href="#the-plugin---polars-argpartition">#</a>
+</h2>
+<p>I was looking for a way to implement the NumPy <a href="https://numpy.org/doc/stable/reference/generated/numpy.argpartition.html"><code>argpartition</code></a> function directly in a Polars DataFrame, without extracting the column into an array.</p>
+<p>This function is useful when you need to retrieve the top <em>k</em> elements of an array without caring about the order of the rest of the array.</p>
+<p>The algorithm itself is complex, but, luckily, Rust standard library provides a function that does exactly that, <a href="https://doc.rust-lang.org/std/primitive.slice.html#method.select_nth_unstable"><code>select_nth_unstable</code></a>.</p>
+<p>This means that the plugin only needs to call it!</p>
+<p><a href="https://github.com/GiovanniGiacometti/polars-argpartition">Here</a> you can find the Github Repository with the code.</p>
+<p><a href="https://pypi.org/project/polars-argpartition/">Here</a> the PyPI page.</p>
+<p>You can install the plugin with any package manager, like <code>uv</code>:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>uv add polars-argpartition
+</span></span></code></pre></div><p>Then, you can use it in your Python code like this:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">import</span> <span style="color:#666;font-weight:bold;font-style:italic">polars</span> <span style="font-weight:bold;text-decoration:underline">as</span> <span style="color:#666;font-weight:bold;font-style:italic">pl</span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">from</span> <span style="color:#666;font-weight:bold;font-style:italic">polars_argpartition</span> <span style="font-weight:bold;text-decoration:underline">import</span> argpartition
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>df = pl.DataFrame(
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#666;font-style:italic">&#34;a&#34;</span>: [1, 3, 6, 2, 5, 10, 12],
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>k = 3
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;font-style:italic">print</span>(
+</span></span><span style="display:flex;"><span>    df.with_columns(
+</span></span><span style="display:flex;"><span>        idxs=argpartition(
+</span></span><span style="display:flex;"><span>            -pl.col(<span style="color:#666;font-style:italic">&#34;a&#34;</span>),
+</span></span><span style="display:flex;"><span>            k=k,
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    .with_row_index(name=<span style="color:#666;font-style:italic">&#34;row_index&#34;</span>)
+</span></span><span style="display:flex;"><span>    .filter(pl.col(<span style="color:#666;font-style:italic">&#34;row_index&#34;</span>).is_in(pl.col(<span style="color:#666;font-style:italic">&#34;idxs&#34;</span>).slice(0, k)))
+</span></span><span style="display:flex;"><span>    .select([<span style="color:#666;font-style:italic">&#34;a&#34;</span>])
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><p>This code applies the argpartition function to the column <code>a</code> and retains only the top 3 elements. This is faster than sorting the whole array, especially when you have a large number of elements.</p>
+<p>The output will be (the order of the elements might change):</p>
+<pre tabindex="0"><code>shape: (3, 1)
+┌──────┐
+│ a    │
+│ ---  │ 
+│ i64  │
+╞══════╡
+│ 6    │
+│ 10   │
+│ 12   │ 
+└──────┘
+
+# i&#39;m aware the markdown is not rendered 
+# perfectly, i&#39;m investigating 🤔 
+</code></pre><hr>
+<p>I hope this example helps you understand how easy it is to write a Polars plugin. If you have any questions, feel free to ask in the comments below!</p>
+
+    
+  </div>
+
+  
+
+
+  
+
+  
+  
+
+<div class="single-pagination">
+    <hr />
+
+    <div class="flex">
+
+        <div class="single-pagination-prev">
+            
+            <div class="single-pagination-container-prev">
+                <div class="single-pagination-text">←</div>
+                <div class="single-pagination-text">
+                    <a href="/posts/python-template/">
+                        A Python repository template, based on uv and Just
+                    </a>
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="single-pagination-next">
+            
+        </div>
+
+    </div>
+
+    <hr />
+</div>
+
+
+
+  
+
+  
+
+  
+  <div class="back-to-top">
+    <a href="#top">
+      back to top
+    </a>
+  </div>
+  
+
+</div>
+
+
+    </main>
+  </div>
+
+  <footer>
+    
+
+    
+    
+    
+    <p>Just Enjoying @ Giovanni Giacometti, 2025</p>
+    
+
+
+  </footer>
+
+  
+
+</body>
+
+<script>
+
+  function isAuto() {
+    return document.body.classList.contains("auto");
+  }
+
+  function setTheme() {
+    if (!isAuto()) {
+      return
+    }
+
+    document.body.classList.remove("auto");
+    let cls = "light";
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      cls = "dark";
+    }
+
+    document.body.classList.add(cls);
+  }
+
+  function invertBody() {
+    document.body.classList.toggle("dark");
+    document.body.classList.toggle("light");
+  }
+
+  if (isAuto()) {
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(invertBody);
+  }
+
+  setTheme();
+
+</script>
+
+<script defer src="/js/copy-code.js"></script>
+</html>
